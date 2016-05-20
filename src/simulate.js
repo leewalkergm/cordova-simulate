@@ -75,8 +75,8 @@ var simulate = function (opts) {
     var target = opts.target || 'chrome';
     var shouldLaunch = opts.launch || true;
     var simHostUrl;
-    // Fallback to true
-    if(shouldLaunch !== true || shouldLaunch !== false) {
+    // Fallback to true if not defined
+    if(shouldLaunch !== true && shouldLaunch !== false) {
         shouldLaunch = true;
     }
 
@@ -88,6 +88,9 @@ var simulate = function (opts) {
             simHostUrl = urls.simHostUrl;
             return launchBrowser(target, urls.appUrl);
         }).then(function () {
+            if(shouldLaunch !== true) {
+                return;
+            }
             return launchBrowser(target, simHostUrl);
         }).catch(function (error) {
             // Ensure server is closed, then rethrow so it can be handled by downstream consumers.
