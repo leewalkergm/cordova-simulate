@@ -37,7 +37,7 @@ var launchServer = function (opts) {
     if (fs.existsSync(middlewarePath + '.js')) {
         require(middlewarePath).attach(server.app, dirs);
     }
-    
+
     /* attach CORS proxy middleware */
     if (!!opts.corsproxy) {
         require('./server/xhr-proxy').attach(server.app);
@@ -73,10 +73,18 @@ var launchBrowser = function (target, url) {
 
 var simulate = function (opts) {
     var target = opts.target || 'chrome';
+    var shouldLaunch = opts.launch || true;
     var simHostUrl;
+    // Fallback to true
+    if(shouldLaunch !== true || shouldLaunch !== false) {
+        shouldLaunch = true;
+    }
 
     return launchServer(opts)
         .then(function (urls) {
+            if(shouldLaunch !== true) {
+                return;
+            }
             simHostUrl = urls.simHostUrl;
             return launchBrowser(target, urls.appUrl);
         }).then(function () {
